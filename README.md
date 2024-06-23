@@ -11,7 +11,7 @@ Currently, two official plugins are available:
 ##############
 
 Project: 
-1. Have a whole chess
+1. Have a whole chess board, with numbers & letters on sides
 2. Have a field where you type the chess tile you want
 3. OK -> make it red
 
