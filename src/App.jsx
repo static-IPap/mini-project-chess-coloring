@@ -1,35 +1,114 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  // input field value
+  const [inputValue, setInputValue] = useState("");
+  // errormessage if calue is not right
+  const [errorMessage, setErrorMessage] = useState("");
+  //The tile to be changed
+  const [highlightedTile, setHighlightedTile] = useState("");
+
+  // initialize rows and columns
+  const rows = [1, 2, 3, 4, 5, 6, 7, 8];
+  const columns = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+  //function to create tile
+  const renderTile = (row, col) => {
+    const tileId = `${col}${row}`;
+    const isBlack = (row + col.charCodeAt(0)) % 2 === 0;
+    const isHighlighted = tileId === highlightedTile;
+    const tileClass = isHighlighted
+      ? "bg-red-500"
+      : isBlack
+      ? "bg-gray-700"
+      : "bg-orange-50";
+    return (
+      <div
+        id={tileId}
+        key={tileId}
+        className={`flex items-center justify-center w-full h-full text-xs font-bold ${tileClass}`}
+      ></div>
+    );
+  };
+
+  const handleReset = () => {
+    setHighlightedTile("");
+    setErrorMessage("");
+    setInputValue("");
+  };
+
+  const handleTransform = () => {
+    const validTile = columns.some((col) =>
+      rows.some((row) => `${col}${row}` === inputValue)
+    );
+    if (validTile) {
+      setHighlightedTile(inputValue);
+      setErrorMessage("");
+      setInputValue("");
+    } else {
+      setErrorMessage("Not a tile");
+      setInputValue("");
+      setTimeout(() => setErrorMessage(""), 2000); // Clear message after 2 seconds
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-300">
+      <div className="grid grid-cols-9 grid-rows-9 w-[450px] h-[450px] mb-4">
+        {/* Empty top-left corner */}
+        <div className="w-12 h-12"></div>
+        {/* Column labels */}
+        {columns.map((col) => (
+          <div
+            key={col}
+            className="flex items-center justify-center w-full h-full text-xs font-bold"
+          >
+            {col}
+          </div>
+        ))}
+        {/* Row labels and tiles */}
+        {rows
+          .slice()
+          .reverse()
+          .map((row) => (
+            <React.Fragment key={row}>
+              {/* Row label */}
+              <div className="flex items-center justify-center w-full h-full text-xs font-bold">
+                {row}
+              </div>
+              {/* Tiles for the row */}
+              {columns.map((col) => renderTile(row, col))}
+            </React.Fragment>
+          ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <div className="flex items-center">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value.toUpperCase())}
+          maxLength={2}
+          name="cellInput"
+          placeholder="π.χ. A1"
+          className="border px-0 py-1 text-center bg-gray-100"
+        />
+        <button
+          onClick={handleTransform}
+          className="ml-2 px-4 py-1 bg-blue-500 text-white rounded"
+        >
+          Transform
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+        <button
+          onClick={handleReset}
+          className="ml-2 px-4 py-1 bg-gray-500 text-white rounded"
+        >
+          Reset
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {errorMessage && <div className="ml-2 text-red-500">{errorMessage}</div>}
+    </div>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
